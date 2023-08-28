@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Container } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
 import './App.scss';
 import Header from './components/Header';
 import ModalAddNew from './components/ModalAddNew';
@@ -12,22 +13,36 @@ function App() {
     };
 
     return (
-        <div className="app-container">
-            <Header />
+        <>
+            <div className="app-container">
+                <Header />
 
-            <Container>
-                <div className="my-3 add-user">
-                    <span> List Users:</span>
-                    <button class="btn btn-success" onClick={() => setIsShowModalAddNew(true)}>
-                        Add new user
-                    </button>
-                </div>
+                <Container>
+                    <div className="my-3 add-user">
+                        <span> List Users:</span>
+                        <button className="btn btn-success" onClick={() => setIsShowModalAddNew(true)}>
+                            Add new user
+                        </button>
+                    </div>
 
-                <TableUsers />
-            </Container>
+                    <TableUsers />
+                </Container>
 
-            <ModalAddNew show={isShowModalAddNew} handleClose={handleClose} />
-        </div>
+                <ModalAddNew show={isShowModalAddNew} handleClose={handleClose} />
+            </div>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+        </>
     );
 }
 
