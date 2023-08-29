@@ -31,7 +31,6 @@ const TableUsers = (props) => {
     };
     return (
         <>
-            {' '}
             <Table striped bordered hover>
                 <thead>
                     <tr>
