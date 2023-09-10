@@ -6,6 +6,18 @@ const fetchAllUser = (page) => {
 };
 
 const postCreateUser = (name, job) => {
-    return axios.post('api/users', { name, job });
+    return axios.post('/users', { name, job });
 };
-export { fetchAllUser, postCreateUser };
+
+const putUpdateUser = (name, job, id) => {
+    return axios.put(`/users/${id}`, { name, job });
+};
+
+const deleteUser = (id) => {
+    return axios.delete(`/users/${id}`);
+};
+
+const loginAPI = (email, password) => {
+    return axios.post('/login', { email, password });
+};
+export { fetchAllUser, postCreateUser, putUpdateUser, deleteUser, loginAPI };

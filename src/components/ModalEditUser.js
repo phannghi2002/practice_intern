@@ -1,41 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { postCreateUser } from '~/services/UserService';
+import { putUpdateUser } from '~/services/UserService';
 
-const ModalAddNew = (props) => {
-    const { show, handleClose, handleUpdateTable } = props;
+const ModalEditUser = (props) => {
+    const { show, handleCloseEdit, handleEditUserFromModal, dataUserEdit } = props;
     const [name, setName] = useState('');
     const [job, setJob] = useState('');
 
     const [email, setEmail] = useState('');
     const [lastName, setLastName] = useState('');
 
-    const handleSaveUser = async () => {
-        let res = await postCreateUser(name, job);
-        console.log(res);
+    const handleEditUser = async () => {
+        //console.log(dataUserEdit);
+        let res = await putUpdateUser(name, job, dataUserEdit.id);
+        if (res && res.updatedAt) {
+            //suscess
+            console.log(res);
+            handleEditUserFromModal({ first_name: name, id: dataUserEdit.id, last_name: lastName, email: email });
 
-        if (res && res.id) {
-            //Success
-            handleClose();
-            setName('');
-            setJob('');
-            setEmail('');
-            setLastName('');
-            toast.success('A user is created success');
-            handleUpdateTable({ first_name: name, id: res.id, last_name: lastName, email: email });
-        } else {
-            //error
-
-            toast.error('An error ...');
+            handleCloseEdit();
+            toast.success('Updated success!');
         }
+        // console.log(res);
     };
 
+    useEffect(() => {
+        if (show) {
+            setName(dataUserEdit.first_name);
+            setEmail(dataUserEdit.email);
+            setLastName(dataUserEdit.last_name);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dataUserEdit]);
     return (
         <>
-            <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+            <Modal show={show} onHide={handleCloseEdit} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add new user</Modal.Title>
+                    <Modal.Title>Edit a user</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="body-add-new">
@@ -89,15 +92,15 @@ const ModalAddNew = (props) => {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
+                    <Button variant="secondary" onClick={handleCloseEdit}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={() => handleSaveUser()}>
-                        Save Changes
+                    <Button variant="primary" onClick={() => handleEditUser()}>
+                        Confirm
                     </Button>
                 </Modal.Footer>
             </Modal>
         </>
     );
 };
-export default ModalAddNew;
+export default ModalEditUser;

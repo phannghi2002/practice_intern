@@ -5,11 +5,19 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+import { UserProvider } from '~/context/UserContext';
+
+import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
+    <UserProvider>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    </UserProvider>,
+
     document.getElementById('root'),
 );
 // If you want to start measuring performance in your app, pass a function
