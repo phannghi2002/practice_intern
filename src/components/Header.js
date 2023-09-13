@@ -1,22 +1,28 @@
 import { Nav, Navbar, NavDropdown, Container } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 import logoApp from '~/assets/images/logo192.png';
-import { useContext } from 'react';
-import { UserContext } from '~/context/UserContext';
+import { handleLogoutRedux } from '~/redux/actions/userAction';
 
 const Header = (props) => {
-    const { logout, user } = useContext(UserContext);
-    // const [hideHeader, setHideHeader] = useState(false);
-
+    const account = useSelector((state) => state.user.account);
+    const dispatch = useDispatch();
     let location = useLocation();
     const navigate = useNavigate();
     const handleLogout = () => {
-        logout();
-        navigate('/');
-        toast.success('Logout successful');
+        // logout();
+        dispatch(handleLogoutRedux());
     };
 
+    useEffect(() => {
+        if (account && account.auth === false && window.location.pathname !== '/login') {
+            navigate('/');
+            toast.success('Logout successful');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [account]);
     return (
         <>
             <Navbar expand="lg" className="bg-body-tertiary">
@@ -40,7 +46,7 @@ const Header = (props) => {
                             <Nav.Link href="/users">Manager Users</Nav.Link> */}
                             {/* <Nav.Link> */}
 
-                            {((user && user.auth) || window.location.pathname === '/') && (
+                            {((account && account.auth) || window.location.pathname === '/') && (
                                 <>
                                     <NavLink to="/" className="nav-link">
                                         Home
@@ -56,10 +62,10 @@ const Header = (props) => {
                         </Nav>
 
                         <Nav>
-                            {user && user.email && <span className="nav-link">Welcome to {user.email}</span>}
+                            {account && account.email && <span className="nav-link">Welcome to {account.email}</span>}
                             <NavDropdown title="Setting" id="basic-nav-dropdown">
                                 {/* thêm user bởi vì nếu không có user nghĩa là undefined thì user.auth sẽ bị sai nghĩa là undefined.auth do đó nó sẽ chết cả giao diện */}
-                                {user && user.auth ? (
+                                {account && account.auth ? (
                                     <NavDropdown.Item onClick={() => handleLogout()}>Logout</NavDropdown.Item>
                                 ) : (
                                     <NavLink to="/login" className="dropdown-item">

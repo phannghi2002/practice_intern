@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { UserContext } from '~/context/UserContext';
-import { loginAPI } from '~/services/UserService';
+import { useDispatch, useSelector } from 'react-redux';
+import { handleLoginRedux } from '~/redux/actions/userAction';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -10,9 +10,10 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [isShowPassword, setIsShowPassword] = useState(false);
 
-    const [loadingAPI, setLoadingAPI] = useState(false);
+    const isLoading = useSelector((state) => state.user.isLoading);
+    const account = useSelector((state) => state.user.account);
 
-    const { loginContext } = useContext(UserContext);
+    const dispatch = useDispatch();
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -20,20 +21,7 @@ const Login = () => {
             return;
         }
 
-        setLoadingAPI(true);
-        let res = await loginAPI(email.trim(), password);
-
-        if (res && res.token) {
-            loginContext(email, res.token);
-            toast.success('Login successful');
-            navigate('/');
-        } else {
-            //error:
-            if (res && res.status === 400) {
-                toast.error(res.data.error);
-            }
-        }
-        setLoadingAPI(false);
+        dispatch(handleLoginRedux(email, password));
     };
 
     const handleGoBack = () => {
@@ -47,20 +35,27 @@ const Login = () => {
         }
     };
 
-    useEffect(() => {
-        let token = localStorage.getItem('token');
-        if (token) {
-            navigate('/');
-            toast.success('Login successful');
-        }
+    // useEffect(() => {
+    //     let token = localStorage.getItem('token');
+    //     if (token) {
+    //         navigate('/');
+    //         toast.success('Login successful');
+    //     }
 
-        //if write function then occur error: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-        // Cleanup function
-        return () => {
-            // Cancel any subscriptions or asynchronous tasks here
-        };
+    //     //if write function then occur error: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
+    //     // Cleanup function
+    //     return () => {
+    //         // Cancel any subscriptions or asynchronous tasks here
+    //     };
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, []);
+
+    useEffect(() => {
+        if (account && account.auth) {
+            navigate('/');
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [account]);
 
     return (
         <>
@@ -95,7 +90,7 @@ const Login = () => {
                     disabled={!(email && password)}
                     onClick={() => handleLogin()}
                 >
-                    {loadingAPI && <i className="fas fa-spinner fa-pulse"></i>}
+                    {isLoading && <i className="fas fa-spinner fa-pulse"></i>}
                     &nbsp; Login
                 </button>
                 <div className="back">

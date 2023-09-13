@@ -2,14 +2,15 @@ import { Container } from 'react-bootstrap';
 import { ToastContainer } from 'react-toastify';
 import './App.scss';
 import Header from '~/components/Header';
+import { useEffect } from 'react';
 
-import { UserContext } from '~/context/UserContext';
-import { useContext, useEffect } from 'react';
 import AppRoutes from './routes/AppRoutes';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { handleRefresh } from '~/redux/actions/userAction';
 function App() {
-    const { user, loginContext } = useContext(UserContext);
-    console.log(user);
+    const dataUserRedux = useSelector((state) => state.user.account);
+    console.log(dataUserRedux);
+    const dispatch = useDispatch();
 
     //  Câu lệnh này giúp cho ta khi đăng nhập xong thì nếu ta refresh thì nó ko bị mất dữ liệu, giải thích tại sao khi ta refresh thì nó lại
     //không mất dữ liệu như sau: khi ta thực hiện F5 thì có nghĩa nó sẽ thực hiện render lại giao diện, mà khi render lại giao diện thì
@@ -19,14 +20,14 @@ function App() {
     //token và email vẫn còn trong localStorage nên ta thực hiện lại hàm loginContext lấy giá trị của email và token trong localStorage
     // để render lại giao diện.
     useEffect(() => {
-        if (localStorage.getItem('token')) loginContext(localStorage.getItem('email'), localStorage.getItem('token'));
-
+        if (localStorage.getItem('token')) dispatch(handleRefresh());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
         <>
             <div className="app-container">
                 <Header />
+
                 <Container>
                     <AppRoutes />
                 </Container>
